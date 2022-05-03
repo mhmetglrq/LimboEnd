@@ -1,0 +1,53 @@
+﻿@page "/universities/{universityLink}"
+@using Limbo.Business.DependencyResolvers.Ninject
+@using Limbo.Business.Abstract
+
+<section class="team-section ptb-120">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-12">
+                <div class="section-heading text-center">
+                    <h2>@unv.Name</h2>
+                    <h3>Bölümler</h3>
+                    <p>
+                        @unv.Name isimli üniversitenin bölümleri ve puanları 
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            @foreach (var i in departmentList)
+            {
+                <a class="col-lg-3 col-md-6" style="text-decoration: none" href="/university/@i.Id">
+                    <div>
+                        <div class="team-single-wrap mt-5">
+                            <div class="team-img rounded-custom" style="background: rgb(188, 188, 188);">
+                                <div style="width: 100%;aspect-ratio: 1;align-items: center;display: flex;"><div style="width: fit-content;margin: auto;"><a style="font-weight: bolder;color: black;">@i.Name</a></div></div>
+                            </div>
+                            <div class="team-info mt-4 text-center">
+                                <h5 class="h6 mb-1">@i.Point</h5>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            }
+        </div>
+    </div>
+</section>
+
+@code {
+    [Parameter]
+    public string universityLink { get; set; }
+
+    Limbo.Entities.Concrete.University unv = new Limbo.Entities.Concrete.University();
+    List<Entities.Concrete.Department> departmentList = new List<Entities.Concrete.Department>();
+
+    protected override void OnInitialized()
+    {
+        var universityService = InstanceFactory.GetInstance<IUniversityService>();
+        unv = universityService.Get(u => u.Link == universityLink);
+        var departmentService = InstanceFactory.GetInstance<IDepartmentService>();
+        departmentList = departmentService.GetAll(d => d.UniversityId == unv.Id);
+    }
+
+}

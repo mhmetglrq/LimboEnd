@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32407.343
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Limbo.SentimentAnalysis", "Limbo.SentimentAnalysis\Limbo.SentimentAnalysis.csproj", "{92707074-08FB-4A7F-9754-1DE560F15A82}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Limbo.Entities", "Limbo.Entities\Limbo.Entities.csproj", "{DCDBD314-5A59-46D8-A5C6-0065E2DDF570}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Limbo.DataAccess", "Limbo.DataAccess\Limbo.DataAccess.csproj", "{E941D72E-CCC2-473E-BF08-EB307F148ACE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Limbo.Business", "Limbo.Business\Limbo.Business.csproj", "{EB3503E1-3DDC-4D22-9F5C-EDBBBB209217}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Limbo.BlazorApp", "Limbo.BlazorApp\Limbo.BlazorApp.csproj", "{C99E1BA2-CEC8-4AF7-8949-6FE0B6BE349D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{92707074-08FB-4A7F-9754-1DE560F15A82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92707074-08FB-4A7F-9754-1DE560F15A82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92707074-08FB-4A7F-9754-1DE560F15A82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92707074-08FB-4A7F-9754-1DE560F15A82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DCDBD314-5A59-46D8-A5C6-0065E2DDF570}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DCDBD314-5A59-46D8-A5C6-0065E2DDF570}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCDBD314-5A59-46D8-A5C6-0065E2DDF570}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DCDBD314-5A59-46D8-A5C6-0065E2DDF570}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E941D72E-CCC2-473E-BF08-EB307F148ACE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E941D72E-CCC2-473E-BF08-EB307F148ACE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E941D72E-CCC2-473E-BF08-EB307F148ACE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E941D72E-CCC2-473E-BF08-EB307F148ACE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB3503E1-3DDC-4D22-9F5C-EDBBBB209217}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB3503E1-3DDC-4D22-9F5C-EDBBBB209217}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB3503E1-3DDC-4D22-9F5C-EDBBBB209217}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB3503E1-3DDC-4D22-9F5C-EDBBBB209217}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C99E1BA2-CEC8-4AF7-8949-6FE0B6BE349D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C99E1BA2-CEC8-4AF7-8949-6FE0B6BE349D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C99E1BA2-CEC8-4AF7-8949-6FE0B6BE349D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C99E1BA2-CEC8-4AF7-8949-6FE0B6BE349D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {20DDF9A8-15FB-46B8-AD56-B6C4D1A94CD7}
+	EndGlobalSection
+EndGlobal

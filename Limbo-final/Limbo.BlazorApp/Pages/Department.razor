@@ -1,0 +1,90 @@
+﻿@page "/university/{Id:int}"
+@using Limbo.Entities.Concrete
+@using Limbo.Business.DependencyResolvers.Ninject
+@using Limbo.Business.Abstract
+@using Limbo.SentimentAnalysis
+
+<section class="integration-details ptb-120">
+    <div class="container">
+        <div class="row justify-content-between">
+            <div class="col-lg-8 pe-lg-5">
+                <h2>@dprtmnt.Name</h2>
+                <div class="accordion faq-accordion" id="accordionExample">
+                    @foreach (var i in commentList)
+                    {
+                        <div class="accordion-item border border-2">
+                            <h5 class="accordion-header" id="@String.Concat("faq-",i.Id)">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@String.Concat("#collapse-",i.Id.ToString())" aria-expanded="false">
+                                    <div class="row justify-content-between" style="width: 100%">
+                                        <div style="width: fit-content">@i.Name</div>
+                                        <div style="width: fit-content">@i.Point</div>
+                                    </div>
+                                </button>
+                            </h5>
+                            <div id="@String.Concat("collapse-",i.Id.ToString())" class="accordion-collapse collapse" aria-labelledby="@String.Concat("faq-",i.Id)" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    @i.Context
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+            </div>
+            <div class="col-lg-4">
+                <div class="job-overview-wrap bg-light p-5 sticky-sidebar rounded-custom mt-5 mt-lg-0">
+                    <h5>Bölümünüzü Değerlendirin</h5>
+                    <a href="/contact" class="btn btn-primary mt-4">Değerlendir</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    [Inject]
+    public NavigationManager UrlNavigationManager { get; set; }
+
+    string pattern = @"[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.edu.[a-zA-Z]{2,4}";
+    List<Comment> commentList = new List<Comment>();
+    Comment cmnt = new Comment();
+    Entities.Concrete.Department dprtmnt = new Entities.Concrete.Department();
+    protected override void OnInitialized()
+    {
+        var commentService = InstanceFactory.GetInstance<ICommentService>();
+        commentList = commentService.GetAll(c => c.DepartmentId == Id);
+        var departmentService = InstanceFactory.GetInstance<IDepartmentService>();
+        dprtmnt = departmentService.Get(d => d.Id == Id);
+    }
+
+    protected async Task Send()
+    {
+        var commentService = InstanceFactory.GetInstance<ICommentService>();
+        var departmentService = InstanceFactory.GetInstance<IDepartmentService>();
+        var universityService = InstanceFactory.GetInstance<IUniversityService>();
+        cmnt.Point = Convert.ToDouble(new SentimentReturn().Predict(cmnt.Context));
+        cmnt.DepartmentId = Id;
+        commentService.Add(cmnt);
+        var commentList = commentService.GetAll(c => c.DepartmentId == Id);
+        double dprtmntPoint = 0;
+        foreach (var i in commentList)
+        {
+            dprtmntPoint += i.Point;
+        }
+        dprtmnt.Point = dprtmntPoint / commentList.Count;
+        departmentService.Update(dprtmnt);
+        var unv = universityService.Get(u => u.Id == dprtmnt.UniversityId);
+        var dprtmntList = departmentService.GetAll(d => d.UniversityId == dprtmnt.UniversityId);
+        double unvPoint = 0;
+        foreach (var i in dprtmntList)
+        {
+            unvPoint += i.Point;
+        }
+        unv.Point = unvPoint / dprtmntList.Count;
+        universityService.Update(unv);
+        UrlNavigationManager.NavigateTo(UrlNavigationManager.Uri, true);
+    }
+}

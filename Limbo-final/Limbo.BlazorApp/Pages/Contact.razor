@@ -1,0 +1,181 @@
+﻿@page "/contact"
+
+@using System.Net.Mail
+@using System.Net
+@using Limbo.Business.Abstract
+@using Limbo.Business.DependencyResolvers.Ninject
+@using Limbo.SentimentAnalysis
+@using Limbo.Entities.Concrete
+@inject IJSRuntime JsRuntime
+
+<section id="contact" class="contact-us-form pt-60 pb-120 bg-dark-soft" style="background: url('img/shape/contact-us-bg.svg')no-repeat center bottom">
+    <div class="container">
+        <div class="row justify-content-lg-between align-items-center">
+            <div class="col-lg-6 col-md-8">
+                <div class="section-heading">
+                    <h2>Bize Ulaşın</h2>
+                </div>
+                <form action="#" class="register-form">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <label for="firstName" class="mb-1">
+                                Adınız <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group mb-3">
+                                <input @bind="name" type="text" class="form-control" id="firstName" required placeholder="Adınız" aria-label="Adınız">
+                            </div>
+                        </div>
+                        <div class="col-sm-6 ">
+                            <label for="lastName" class="mb-1">
+                                Soyadınız<span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group mb-3">
+                                <input @bind="surname" type="text" class="form-control" id="lastName" required placeholder="Soyadınız" aria-label="Soyadınız">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="university" class="mb-1">Üniversite<span class="text-danger">*</span></label>
+                            <div class="input-group mb-3">
+                                <select onchange="@DoStuff1" class="custom-select">
+                                    <option disabled="" selected="">Seçiniz</option>
+                                    @foreach (var i in universityList)
+                                    {
+                                        <option value="@i.Id">@i.Name</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="department" class="mb-1">Bölüm<span class="text-danger">*</span></label>
+                            <div class="input-group mb-3">
+                                <select onchange="@DoStuff2" class="custom-select">
+                                    <option disabled="" selected="">Seçiniz</option>
+                                    @foreach (var i in departmentList)
+                                    {
+                                        <option value="@i.Id">@i.Name</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="email" class="mb-1">Email<span class="text-danger">*</span></label>
+                            <div class="input-group mb-3">
+                                <input @bind="mail" type="email" class="form-control" id="email" required placeholder="Email" aria-label="Email">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label for="yourMessage" class="mb-1">Mesaj<span class="text-danger">*</span></label>
+                            <div class="input-group mb-3">
+                                <textarea @bind="message" class="form-control" id="yourMessage" required placeholder="Bölümünüzün uzaktan eğitim kalitesi hakkında düşünceleriniz." style="height: 120px"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <a onclick="@Send" class="btn btn-primary mt-4">Gönder</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+@code
+{
+    string name = "";
+    string surname = "";
+    string mail = "";
+    string message = "";
+    int selected1 = 0;
+    int selected2 = 0;
+
+    [Inject]
+    public NavigationManager UrlNavigationManager { get; set; }
+
+    string pattern = @"[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.edu.[a-zA-Z]{2,4}";
+    Comment cmnt = new Comment();
+    List<Entities.Concrete.Department> departmentList = new List<Entities.Concrete.Department>();
+    List<Entities.Concrete.University> universityList = new List<Entities.Concrete.University>();
+    Entities.Concrete.Department dprtmnt = new Entities.Concrete.Department();
+
+    void DoStuff1(ChangeEventArgs e)
+    {
+        selected1 = Convert.ToInt32(e.Value);
+        var departmentService = InstanceFactory.GetInstance<IDepartmentService>();
+        departmentList = departmentService.GetAll(d => d.UniversityId == selected1);
+    }
+    void DoStuff2(ChangeEventArgs e)
+    {
+        selected2 = Convert.ToInt32(e.Value);
+        var departmentService = InstanceFactory.GetInstance<IDepartmentService>();
+        dprtmnt = departmentService.Get(d => d.Id == selected2);
+    }
+    protected override void OnInitialized()
+    {
+
+        var universityService = InstanceFactory.GetInstance<IUniversityService>();
+        universityList = universityService.GetAll();
+
+    }
+
+    async void Send()
+    {
+        var commentService = InstanceFactory.GetInstance<ICommentService>();
+        var commentList = commentService.GetAll(c => c.DepartmentId == selected2);
+        var s = false;
+        foreach (var a in commentList)
+        {
+            if (a.Mail==mail)
+            {
+                s = true;
+            }
+        }
+        if (name == "" || surname == "" || this.mail == "" || message == "")
+        {
+            await JsRuntime.InvokeVoidAsync("alert", "Gerekli alanları doldurunuz."); // Alert
+        }
+        else if (!mail.Contains(".edu."))
+        {
+            await JsRuntime.InvokeVoidAsync("alert", "Lütfen bir okul maili giriniz."); // Alert
+        }
+        else if (s)
+        {
+            await JsRuntime.InvokeVoidAsync("alert", "Bu mail daha önce kullanılmıştır."); // Alert
+        }
+        else
+        {
+            try
+            {
+                var departmentService = InstanceFactory.GetInstance<IDepartmentService>();
+                var universityService = InstanceFactory.GetInstance<IUniversityService>();
+                cmnt.Name = name + " " + surname;
+                cmnt.Context = message;
+                cmnt.Mail = mail;
+                cmnt.Point = Convert.ToDouble(new SentimentReturn().Predict(cmnt.Context));
+                cmnt.DepartmentId = selected2;
+                commentService.Add(cmnt);
+                double dprtmntPoint = 0;
+                foreach (var i in commentList)
+                {
+                    dprtmntPoint += i.Point;
+                }
+                dprtmnt.Point = dprtmntPoint / commentList.Count;
+                departmentService.Update(dprtmnt);
+                var unv = universityService.Get(u => u.Id == dprtmnt.UniversityId);
+                var dprtmntList = departmentService.GetAll(d => d.UniversityId == dprtmnt.UniversityId);
+                double unvPoint = 0;
+                foreach (var i in dprtmntList)
+                {
+                    unvPoint += i.Point;
+                }
+                unv.Point = unvPoint / dprtmntList.Count;
+                universityService.Update(unv);
+                await JsRuntime.InvokeVoidAsync("alert", "Yorum Gönderildi.");
+            }
+            catch (Exception e)
+            {
+                await JsRuntime.InvokeVoidAsync("alert", e.ToString()); // Alert
+            }
+
+        }
+
+
+
+    }
+}

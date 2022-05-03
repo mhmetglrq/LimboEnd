@@ -1,0 +1,63 @@
+﻿@page "/universities"
+@using Limbo.Business.DependencyResolvers.Ninject
+@using Limbo.Business.Abstract
+@using Limbo.Entities.Concrete
+
+<section class="team-section ptb-120">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-12">
+                <div class="section-heading text-center">
+                    <h2>Üniversiteler</h2>
+                    <p>
+                        Üniversiteni seçerek değerlerini görebilirsin.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            @foreach (var i in universityList)
+            {
+                <a class="col-lg-3 col-md-6" style="text-decoration: none" href="/universities/@i.Link">
+                    <div>
+                        <div class="team-single-wrap mt-5">
+                            <div class="team-img rounded-custom">
+                                <img src="@i.Logo" alt="team" class="img-fluid position-relative">
+                            </div>
+                            <div class="team-info mt-4 text-center">
+                                <h5 class="h6 mb-1">@i.Name</h5>
+                                <p class="text-muted small mb-0">@i.City</p>
+                                <p class="text-muted small mb-0">@i.Point</p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            }
+            @*<a class="col-lg-3 col-md-6" style="text-decoration: none" href="/university/samsun-universitesi">
+                <div>
+                    <div class="team-single-wrap mt-5">
+                        <div class="team-img rounded-custom">
+                            <img src="img/team/team-2.jpg" alt="team" class="img-fluid position-relative">
+                        </div>
+                        <div class="team-info mt-4 text-center">
+                            <h5 class="h6 mb-1">Samsun Üniversitesi</h5>
+                            <p class="text-muted small mb-0">Samsun</p>
+                            <p class="text-muted small mb-0">100</p>
+                        </div>
+                    </div>
+                </div>
+            </a>*@
+            
+        </div>
+    </div>
+</section>
+
+@code {
+    List<Entities.Concrete.University> universityList = new List<Entities.Concrete.University>();
+    protected override void OnInitialized()
+    {
+        var universityService = InstanceFactory.GetInstance<IUniversityService>();
+        universityList = universityService.GetAll().OrderByDescending(u => u.Point).ToList();
+    }
+
+}
